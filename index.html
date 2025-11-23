@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邀请函合成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        @font-face {
+            font-family: 'HuaWen XingKai';
+            src: url('data:font/woff2;base64,') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'HuaWen XingKai2';
+            src: url('data:font/woff2;base64,') format('woff2'),
+				 url('fonts/myfont.woff2') format('woff2'),
+                 url('fonts/华文行楷.ttf') format('ttf'),
+                 url('fonts/myfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        
+        :root {
+            --primary-bg: #0f0f23;
+            --secondary-bg: #1a1a2e;
+            --accent-color: #ff6b35;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8b8;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --chinese-black: #000000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'HuaWen XingKai', 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        .glass-effect {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+        }
+
+        .editor-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            min-width: 2100px;
+        }
+
+        .canvas-area {
+            position: relative;
+            width: 2025px;
+            height: 1280px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+        }
+
+        .background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .text-overlay {
+            position: absolute;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--chinese-black);
+            font-family: 'HuaWen XingKai2', 'Noto Sans SC', sans-serif;
+            font-size: 150px;
+            font-weight: normal;
+            text-align: center;
+			writing-mode: vertical-rl;
+            resize: none;
+            overflow: hidden;
+            line-height: 1.5;
+            pointer-events: none;
+        }
+
+        .text-overlay-1 {
+            bottom: 25%;
+            left: 78%;
+            transform: translateX(-10%);
+            width: 10%;
+            height: 120px;
+        }
+
+        .text-overlay-2 {
+            top: 12%;
+            left: 87%;
+            transform: translateX(-10%);
+            width: 10%;
+            height: 120px;
+        }
+
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            z-index: 1000;
+        }
+
+        .text-input-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .text-input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 15px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        .text-input-field:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+        }
+
+        .text-input-field::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #canvasArea {
+            position: relative;
+            width: 2025px;
+            height: 1280px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            padding-right: 360px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--accent-color), #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="editor-container">
+            <h1 class="title">邀请函合成器</h1>
+            
+            <div id="canvasArea" class="canvas-area">
+                <img id="backgroundImage" class="background-image" src="resources/background.png" alt="背景图片">
+                
+                <!-- 固定位置的文本显示区域 -->
+                <textarea id="textDisplay1" class="text-overlay text-overlay-1" readonly></textarea>
+                <textarea id="textDisplay2" class="text-overlay text-overlay-2" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- 固定控制面板 -->
+    <div class="control-panel">
+        <div class="text-input-panel">
+            <h3 class="text-lg font-semibold mb-4 text-center">文本编辑控制</h3>
+            
+            <!-- 文本输入区域 -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">左文本</label>
+                <textarea id="textInput1" class="text-input-field" placeholder="请输入姓名..."></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">右文本</label>
+                <textarea id="textInput2" class="text-input-field" placeholder="请输入某府..."></textarea>
+            </div>
+            
+            <!-- 字号控制 -->
+            <div class="slider-container">
+                <label class="block text-sm font-medium mb-2"> <span id="fontSizeDisplay">150</span> </label>
+                <label id="fontSizeSlider" class="slider" min="16" max="172" value="150"></label>
+            </div>
+			
+            <!-- 字号控制 
+            <div class="slider-container">
+                <label class="block text-sm font-medium mb-2">字号大小: <span id="fontSizeDisplay">150</span>px</label>
+                <input type="range" id="fontSizeSlider" class="slider" min="16" max="172" value="150">
+            </div>-->
+            
+            <!-- 文件上传 -->
+            <div class="upload-area" onclick="document.getElementById('imageUpload').click()">
+                <p class="text-sm">点击上传背景图片</p>
+                <p class="text-xs text-gray-400 mt-1">支持 JPG, PNG 格式</p>
+            </div>
+            <input type="file" id="imageUpload" class="hidden" accept="image/*">
+            
+            <!-- 操作按钮 -->
+            <div class="flex flex-col space-y-2 mt-4">
+                <button id="downloadBtn" class="btn">下载合成图片</button>
+                <button id="resetBtn" class="btn btn-secondary">重置编辑器</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 画布元素（用于图片合成） -->
+    <canvas id="合成画布" class="hidden"></canvas>
+
+    <script src="main.js"></script>
+</body>
+</html>
