@@ -188,7 +188,7 @@ class ImageTextEditor {
             
             // 绘制上方文本
             if (textInput1.trim()) {
-                this.drawVerticalText(textInput1, 1650, 300, fontSize * 1.5);
+                this.drawVerticalText(textInput1, 1670, 160, fontSize * 1.5);
             }
             
             // 绘制下方文本
