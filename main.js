@@ -1,4 +1,4 @@
-// 图片文本合成器 - 修复版本 - 2025x1280px
+// 图片文本合成器 - 修复版本 -  2025x1280px
 
 class ImageTextEditor {
     constructor() {
@@ -124,7 +124,7 @@ class ImageTextEditor {
         }
     }
 	drawVerticalText(text, startX, startY, fontSize) {
-		const lineHeight = fontSize * 0.8; // 字符间距
+		const lineHeight = fontSize * 0.75; // 字符间距
 		const maxHeight = this.fixedHeight * 0.7; // 最大高度限制
 		
 		// 逐字绘制
@@ -151,7 +151,7 @@ class ImageTextEditor {
         try {
             const textInput1 = document.getElementById('textInput1').value;
             const textInput2 = document.getElementById('textInput2').value;
-            const fontSize = 150;
+            const fontSize = 130;
             
             // 清空画布
             this.ctx.clearRect(0, 0, this.fixedWidth, this.fixedHeight);
@@ -188,12 +188,12 @@ class ImageTextEditor {
             
             // 绘制上方文本
             if (textInput1.trim()) {
-                this.drawVerticalText(textInput1, 1670, 160, fontSize * 1.5);
+                this.drawVerticalText(textInput1, 1670, 120, fontSize * 1.5);
             }
             
             // 绘制下方文本
             if (textInput2.trim()) {
-                this.drawVerticalText(textInput2, 1850, 500, fontSize * 1.5);
+                this.drawVerticalText(textInput2, 1850, 480, fontSize * 1.5);
             }
             
             // 尝试下载图片
@@ -492,7 +492,7 @@ class ImageTextEditor {
         document.getElementById('textInput2').value = '';
         document.getElementById('textDisplay1').value = '';
         document.getElementById('textDisplay2').value = '';
-        document.getElementById('fontSizeSlider').value = 150;
+        document.getElementById('fontSizeSlider').value = 130;
         
         // 重置显示
         this.updateFontSize(150);
